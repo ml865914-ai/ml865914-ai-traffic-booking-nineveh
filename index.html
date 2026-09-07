@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <script>
+      (function() {
+        // Intercept Vite HMR WebSocket so it connects cleanly without errors
+        if (typeof window !== 'undefined' && window.WebSocket) {
+          var OrigWebSocket = window.WebSocket;
+          function FakeViteWebSocket(url, protocols) {
+            var isVite = false;
+            if (protocols === 'vite-hmr' || protocols === 'vite-ping') isVite = true;
+            if (typeof url === 'string' && (url.indexOf('token=') !== -1 || url.indexOf('vite') !== -1 || url.indexOf(':3000') !== -1)) isVite = true;
+            if (isVite) {
+              var target = new EventTarget();
+              target.url = url;
+              target.protocol = protocols || '';
+              target.readyState = 0; // CONNECTING
+              target.CONNECTING = 0;
+              target.OPEN = 1;
+              target.CLOSING = 2;
+              target.CLOSED = 3;
+              target.binaryType = 'blob';
+              target.send = function() {};
+              target.close = function(code, reason) {
+                target.readyState = 3;
+                try { target.dispatchEvent(new Event('close')); } catch (err) {}
+              };
+              Object.defineProperty(target, 'onopen', {
+                set: function(fn) { target.addEventListener('open', fn); },
+                get: function() { return null; }
+              });
+              Object.defineProperty(target, 'onclose', {
+                set: function(fn) { target.addEventListener('close', fn); },
+                get: function() { return null; }
+              });
+              Object.defineProperty(target, 'onerror', {
+                set: function(fn) { target.addEventListener('error', fn); },
+                get: function() { return null; }
+              });
+              Object.defineProperty(target, 'onmessage', {
+                set: function(fn) { target.addEventListener('message', fn); },
+                get: function() { return null; }
+              });
+              setTimeout(function() {
+                target.readyState = 1; // OPEN
+                try { target.dispatchEvent(new Event('open')); } catch (err) {}
+              }, 10);
+              return target;
+            }
+            return new OrigWebSocket(url, protocols);
+          }
+          FakeViteWebSocket.CONNECTING = 0;
+          FakeViteWebSocket.OPEN = 1;
+          FakeViteWebSocket.CLOSING = 2;
+          FakeViteWebSocket.CLOSED = 3;
+          FakeViteWebSocket.prototype = OrigWebSocket.prototype;
+          window.WebSocket = FakeViteWebSocket;
+        }
+
+        function shouldFilter(item) {
+          if (!item) return false;
+          var str = '';
+          try {
+            if (typeof item === 'string') str = item;
+            else if (item instanceof Error) str = (item.message || '') + ' ' + (item.stack || '');
+            else if (typeof item === 'object') {
+              str = (item.message || '') + ' ' + (item.type || '') + ' ' + (item.reason || '') + ' ' + (item.filename || '') + ' ' + JSON.stringify(item);
+            } else {
+              str = String(item);
+            }
+          } catch (e) {
+            str = String(item);
+          }
+          str = str.toLowerCase();
+          return (
+            str.indexOf('[vite]') !== -1 ||
+            str.indexOf('vite') !== -1 ||
+            str.indexOf('websocket') !== -1 ||
+            str.indexOf('cssrules') !== -1 ||
+            str.indexOf('cannot access rules') !== -1 ||
+            str.indexOf('error inlining remote css') !== -1
+          );
+        }
+
+        var _err = console.error;
+        var _warn = console.warn;
+        var _log = console.log;
+        var _debug = console.debug;
+        var _info = console.info;
+
+        function checkArgs(args) {
+          for (var i = 0; i < args.length; i++) {
+            if (shouldFilter(args[i])) return true;
+          }
+          return false;
+        }
+
+        console.error = function() {
+          if (checkArgs(arguments)) return;
+          return _err.apply(console, arguments);
+        };
+        console.warn = function() {
+          if (checkArgs(arguments)) return;
+          return _warn.apply(console, arguments);
+        };
+        console.log = function() {
+          if (checkArgs(arguments)) return;
+          return _log.apply(console, arguments);
+        };
+        console.debug = function() {
+          if (checkArgs(arguments)) return;
+          return _debug.apply(console, arguments);
+        };
+        if (_info) {
+          console.info = function() {
+            if (checkArgs(arguments)) return;
+            return _info.apply(console, arguments);
+          };
+        }
+
+        window.addEventListener('error', function(e) {
+          if (shouldFilter(e.message) || shouldFilter(e.error) || shouldFilter(e.filename)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(e) {
+          if (shouldFilter(e.reason)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          }
+        }, true);
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>مكتب عبدالله السيد للحجز المروري</title>
+    <meta name="description" content="منصة مكتب عبدالله السيد لاستقبال وتنظيم طلبات الحجوزات والخدمات المرورية داخل محافظة نينوى." />
+    <meta property="og:title" content="مكتب عبدالله السيد للحجز المروري" />
+    <meta property="og:description" content="منصة مكتب عبدالله السيد لاستقبال وتنظيم طلبات الحجوزات والخدمات المرورية داخل محافظة نينوى." />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#0f2942" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="مرور نينوى" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  </head>
+  <body class="font-sans antialiased bg-slate-50 text-slate-900 selection:bg-blue-600 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

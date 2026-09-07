@@ -1,0 +1,6 @@
+{
+  "name": "مكتب عبدالله السيد للحجز المروري",
+  "description": "منصة مكتب عبدالله السيد لاستقبال وتنظيم طلبات الحجوزات والخدمات المرورية داخل محافظة نينوى.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

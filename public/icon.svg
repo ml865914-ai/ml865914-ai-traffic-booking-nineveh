@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f2942" />
+      <stop offset="100%" stop-color="#1e3a5f" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+  </defs>
+  <!-- Background Shield -->
+  <rect width="512" height="512" rx="110" fill="url(#bgGrad)" />
+  <circle cx="256" cy="256" r="210" fill="none" stroke="url(#goldGrad)" stroke-width="8" stroke-dasharray="16 8" opacity="0.8" />
+  
+  <!-- Outer Ring -->
+  <circle cx="256" cy="256" r="185" fill="#0b1e32" stroke="#2563eb" stroke-width="4" />
+  
+  <!-- Traffic Shield & Elements -->
+  <path d="M256 120 L350 165 V260 C350 330 256 385 256 385 C256 385 162 330 162 260 V165 Z" fill="#1e293b" stroke="url(#goldGrad)" stroke-width="6" />
+  
+  <!-- Vehicle & Road Silhouette -->
+  <!-- Traffic Light / Car Icon -->
+  <path d="M200 230 C200 210 220 200 256 200 C292 200 312 210 312 230 L322 270 C324 278 318 285 310 285 H202 C194 285 188 278 190 270 Z" fill="#2563eb" />
+  <circle cx="225" cy="265" r="10" fill="#fbbf24" />
+  <circle cx="287" cy="265" r="10" fill="#fbbf24" />
+  <rect x="220" y="215" width="72" height="22" rx="4" fill="#ffffff" opacity="0.9" />
+  
+  <!-- Road lines -->
+  <path d="M220 340 L245 295 H267 L292 340 Z" fill="#334155" />
+  <line x1="256" y1="300" x2="256" y2="335" stroke="#fbbf24" stroke-width="4" stroke-dasharray="6 4" />
+  
+  <!-- Star / Wing Accent -->
+  <polygon points="256,155 264,175 285,175 268,188 274,208 256,195 238,208 244,188 227,175 248,175" fill="url(#goldGrad)" />
+  
+  <!-- Bottom Ribbon text indicator -->
+  <rect x="156" y="395" width="200" height="42" rx="21" fill="#d97706" />
+  <text x="256" y="422" font-family="'Cairo', sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle" direction="rtl">مرور نينوى</text>
+</svg>

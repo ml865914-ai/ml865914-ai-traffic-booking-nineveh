@@ -1,0 +1,90 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Admin authorization check against admins collection
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Validator for Booking creation: STRICT NINEVEH GOVERNORATE ENFORCEMENT
+    function isValidNewBooking(data) {
+      return data.governorate == 'Nineveh' &&
+        data.fullName is string && data.fullName.size() >= 6 && data.fullName.size() <= 120 &&
+        data.surname is string && data.surname.size() >= 2 && data.surname.size() <= 50 &&
+        data.phone is string && data.phone.size() >= 10 && data.phone.size() <= 15 &&
+        data.serviceId is string && data.serviceId.size() <= 64 &&
+        data.serviceName is string && data.serviceName.size() <= 120 &&
+        data.price is number && data.price > 0 &&
+        data.bookingNumber is string && data.bookingNumber.matches('^TR-NIN-2026-\\d{6}$') &&
+        data.paymentStatus == 'UNPAID' &&
+        data.bookingStatus == 'PENDING_PAYMENT';
+    }
+
+    // Validator for user attaching payment proof
+    function isProofUploadAction() {
+      return incoming().diff(existing()).affectedKeys().hasOnly(['paymentProofUrl', 'paymentStatus', 'bookingStatus', 'notes']) &&
+        incoming().paymentProofUrl is string && incoming().paymentProofUrl.size() > 10 &&
+        incoming().paymentStatus == 'PENDING_VERIFICATION' &&
+        incoming().bookingStatus == 'PAYMENT_REVIEW' &&
+        incoming().governorate == 'Nineveh';
+    }
+
+    // Services collection
+    match /services/{serviceId} {
+      allow read: if isValidId(serviceId);
+      allow write: if isValidId(serviceId) && isAdmin();
+    }
+
+    // Settings collection
+    match /settings/{settingId} {
+      allow read: if isValidId(settingId);
+      allow write: if isValidId(settingId) && isAdmin();
+    }
+
+    // Admins registry
+    match /admins/{adminId} {
+      allow read: if isValidId(adminId) && isSignedIn() && (request.auth.uid == adminId || isAdmin());
+      allow write: if false; // bootstrapped via admin console or cloud functions
+    }
+
+    // Bookings collection
+    match /bookings/{bookingId} {
+      allow get: if isValidId(bookingId);
+      allow list: if isAdmin();
+      
+      // User or Admin create booking: STRICT Nineveh governorate enforcement
+      allow create: if isValidId(bookingId) && isValidNewBooking(incoming());
+
+      // User attaching proof or Admin reviewing payment
+      allow update: if isValidId(bookingId) && (
+        isAdmin() ||
+        isProofUploadAction()
+      );
+
+      allow delete: if isValidId(bookingId) && isAdmin();
+    }
+  }
+}
