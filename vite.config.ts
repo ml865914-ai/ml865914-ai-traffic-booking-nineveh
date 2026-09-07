@@ -10,9 +10,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default defineConfig(() => {
-  // Use repository base path for GitHub Pages (/traffic-booking-nineveh/), or '/' for root/custom domain/local dev
-  const isGitHubPages = process.env.GITHUB_ACTIONS === 'true' || process.env.DEPLOY_TARGET === 'gh-pages';
-  const base = isGitHubPages ? '/traffic-booking-nineveh/' : (process.env.VITE_BASE || '/');
+  // Base path matching the GitHub Pages repository: ml865914-ai/ml865914-ai-traffic-booking-nineveh
+  const base = '/ml865914-ai-traffic-booking-nineveh/';
 
   return {
     base,
